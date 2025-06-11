@@ -42,7 +42,7 @@ module.exports = {
     },
     getpatient: (req, res)=>{
         patient.find({ }).then((result)=>{
-            res.json(result)
+            res.send(result)
         }).catch((err)=>{
             console.log(err)
         })
