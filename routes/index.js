@@ -4,7 +4,7 @@ var patient  = require('./controller/patient');
 var assessment2q = require('./controller/assessment_2q');
 var assessment9q = require('./controller/assessment_9q');
 var user = require('./controller/user');
-var
+var patients = mongoose.model('patient', require('../schema/patient'));
 
 router.use(function(req, res, next){
   res.setHeader('Access-Control-Allow-Origin','*');
