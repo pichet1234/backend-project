@@ -146,12 +146,12 @@ module.exports = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
-  getuser:(req, res)=>{
+  getuser: (req, res)=>{
     User.find({ }).then((result)=>{
       console.log("001");
       res.json(result);
     }).catch((err)=>{
-      console.log("e");
+      console.log("e",err);
     });
   }
 };
