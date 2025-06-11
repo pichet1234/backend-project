@@ -4,6 +4,7 @@ var patient  = require('./controller/patient');
 var assessment2q = require('./controller/assessment_2q');
 var assessment9q = require('./controller/assessment_9q');
 var user = require('./controller/user');
+var
 
 router.use(function(req, res, next){
   res.setHeader('Access-Control-Allow-Origin','*');
@@ -26,9 +27,11 @@ router.post('/registerpatient', (req, res, next)=>{ patient.regispatient(req, re
 router.get('/getpatient', (req, res, next)=>{ patient.getpatient(req, res)});
 router.get('/getpatass', (req, res, next)=>{ patient.getpatass(req, res);});
 router.get('/patienttest' ,(req, res)=>{
-   patient.find({ }).then((result)=>{
-     res.json(reult);
-   })
+  patients.find({ }).then((result)=>{
+            res.json(result)
+        }).catch((err)=>{
+            console.log(err)
+      })
 })
 
 /**
