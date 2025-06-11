@@ -145,5 +145,13 @@ module.exports = {
       console.error('Login error:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
+  },
+  getuser:(req, res)=>{
+    User.find({ }).then((result)=>{
+      console.log("001");
+      res.json(result);
+    }).catch((err)=>{
+      console.log("e");
+    });
   }
 };
