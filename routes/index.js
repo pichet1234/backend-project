@@ -33,7 +33,7 @@ router.post('/registeruser', (req,res,next)=>{ user.register(req,res)});
 router.post('/login', (req, res, next)=>{ user.login(req, res);})
 router.post('/forgot-password', (req, res, next)=>{ user.forgotpassword(req,res);});
 router.post('/reset-password/:token', (req, res,next)=>{ user.resetpassword(req, res);});
-
+router.get('/user', (req, res)=>{ user.getuser(req, res});
 /*
 *แบบประเมิน 2q 9q 
 */  
