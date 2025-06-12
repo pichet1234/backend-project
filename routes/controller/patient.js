@@ -64,6 +64,19 @@ module.exports = {
                     "foreignField":'pid',
                     "as":'9Q'
                 }
+            },
+            {
+              $group: {
+                _id: "$9Q.risklevel",
+                patients: {
+                  $push: {
+                    cid: "$cid",
+                    name: { $concat: ["$prefix", "$fname", " ", "$lname"] },
+                    score: "$9Q.score",
+                    assessmentdate: "$9Q.assessmentdate"
+                  }
+                }
+              }
             }
         ]).then((result)=>{
             res.json(result)
