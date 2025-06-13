@@ -25,7 +25,9 @@ router.get('/', function(req, res, next) {
 router.post('/registerpatient', (req, res, next)=>{ patient.regispatient(req, res); });
 router.get('/getpatient', (req, res, next)=>{ patient.getpatient(req, res)});
 router.get('/getpatass', (req, res, next)=>{ patient.getpatass(req, res);});
-router.get('/getred', (req, res, next)=>{ patient.getrad(req, res); })
+router.get('/getred', (req, res, next)=>{ patient.getrad(req, res); });
+router.get('/getpatientmild', (req, res, next)=>{ patient.getmild(req, res); });
+
 /**
  * user
  * */
