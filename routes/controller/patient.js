@@ -104,7 +104,7 @@ module.exports = {
          },
          {
           $match: { // เงื่อนไข score >= 8 
-            "9Q.score": { $gte: 8 }
+            "9Q.score": { "$gte": 8 }
             }
          }
         ]).then((result)=>{
