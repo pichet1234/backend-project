@@ -155,7 +155,7 @@ module.exports = {
             },
             {
                 $match: {
-                "9Q.score": { $gt: 7, $lte: 12 }
+                "9Q.score": { $gt: 7, $lte: 12 }// score > 7 แต่ไม่เกิน 12 score <=12 
                 }
             },
             {
