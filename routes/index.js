@@ -27,7 +27,7 @@ router.get('/getpatient', (req, res, next)=>{ patient.getpatient(req, res)});
 router.get('/getpatass', (req, res, next)=>{ patient.getpatass(req, res);});
 router.get('/getred', (req, res, next)=>{ patient.getrad(req, res); });
 router.get('/getpatientmild', (req, res, next)=>{ patient.getmild(req, res); });
-router.ger('/countpatient', (req, res, next)=>{ patient.getcontpatient(req, res);})
+router.get('/countpatient', (req, res, next)=>{ patient.getcontpatient(req, res);})
 
 /**
  * user
