@@ -83,5 +83,90 @@ module.exports = {
         }).catch((err)=>{
             console.log(err)
         })
+    },
+    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=8
+    getrad:(req, res)=>{
+        patient.aggregate([{
+            "$lookup":{
+             "from":"assessment2q",
+             "localField":"_id",
+        	 "foreignField":"pid",
+		     "as":"2Q"
+            }
+          },
+          {
+            "$lookup":{
+                "from":"assessment9q",
+                "localField":"_id",
+                "foreignField":"pid",
+                "as":"9Q"
+             }
+         },
+         {
+          "$match": { // เงื่อนไข score >= 8 
+            "9Q.score": { "$gte": 8 }
+            }
+         }
+        ]).then((result)=>{
+            res.json(result)
+        }).catch((err)=>{
+            console.log(err)
+        })
+    },
+    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
+    getmild: (req, res)=>{
+        patient.aggregate([
+            {
+                "$lookup":{
+                    "from":"assessment9q",
+                    "localField":"_id",
+                    "foreignField":"pid",
+                    "as":"9Q"
+                }
+            },
+            {
+                "$match":{
+                    "9Q.score":{ "$gt":7,"$lte":12 }
+                }
+            },
+            {
+                "$group":{
+                    _id:null,
+                    count: { "$sum": 1 }
+                }
+            }
+        ]).then((result)=>{
+            res.json(result)
+        }).catch((err)=>{
+            console.log(err)
+        })
+    },
+     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
+     getmild: (req, res)=>{
+        patient.aggregate([
+            {
+                "$lookup":{
+                    "from":"assessment9q",
+                    "localField":"_id",
+                    "foreignField":"pid",
+                    "as":"9Q"
+                }
+            },
+            {
+                "$match":{
+                    "9Q.score":{ "$gt":7,"$lte":12 }
+                }
+            },
+            {
+                "$group":{
+                    _id:null,
+                    count: { "$sum": 1 }
+                }
+            }
+        ]).then((result)=>{
+            res.json(result)
+        }).catch((err)=>{
+            console.log(err)
+        })
     }
 }
