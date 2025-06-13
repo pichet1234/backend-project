@@ -83,5 +83,34 @@ module.exports = {
         }).catch((err)=>{
             console.log(err)
         })
+    },
+    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=8
+    getrad:(req, res)=>{
+        patient.aggregate([{
+            "$lookup":{
+             "from":"assessment2q",
+             "localField":"_id",
+        	 "foreignField":"pid",
+		     "as":"2Q"
+            }
+          },
+          {
+            "$lookup":{
+                "from":"assessment2q",
+                "localField":"_id",
+                "foreignField":"pid",
+                "as":"2Q"
+             }
+         },
+         {
+          $match: { // เงื่อนไข score >= 8 
+            "9Q.score": { $gte: 8 }
+            }
+         }
+        ]).then((result)=>{
+            res.json(result)
+        }).catch((err)=>{
+            console.log(err)
+        })
     }
 }
