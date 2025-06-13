@@ -83,13 +83,5 @@ module.exports = {
         }).catch((err)=>{
             console.log(err)
         })
-    },
-    gercountpatien:async (req , res)=>{
-        try{
-            const count = await patient.countDocuments();
-            res.json({total:count});
-        }catch(err){
-            res.status(500).json({ error:'เกิดข้อผิดพลาด'});
-        }
     }
 }
