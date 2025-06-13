@@ -128,12 +128,6 @@ module.exports = {
                 "$match":{
                     "9Q.score":{ "$gt":7,"$lte":12 }
                 }
-            },
-            {
-                "$group":{
-                    _id:null,
-                    count: { "$sum": 1 }
-                }
             }
         ]).then((result)=>{
             res.json(result)
@@ -142,7 +136,7 @@ module.exports = {
         })
     },
      //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
-    getmild: async (req, res) => {
+    getcountmild: async (req, res) => {
         try {
             const result = await patient.aggregate([
             {
