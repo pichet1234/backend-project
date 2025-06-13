@@ -142,31 +142,42 @@ module.exports = {
         })
     },
      //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
-     getmild: (req, res)=>{
-        patient.aggregate([
+    getmild: async (req, res) => {
+        try {
+            const result = await patient.aggregate([
             {
-                "$lookup":{
-                    "from":"assessment9q",
-                    "localField":"_id",
-                    "foreignField":"pid",
-                    "as":"9Q"
+                $lookup: {
+                from: "assessment9q",
+                localField: "_id",
+                foreignField: "pid",
+                as: "9Q"
                 }
             },
             {
-                "$match":{
-                    "9Q.score":{ "$gt":7,"$lte":12 }
+                $match: {
+                "9Q.score": { $gt: 7, $lte: 12 }
                 }
             },
             {
-                "$group":{
-                    _id:null,
-                    count: { "$sum": 1 }
+                $group: {
+                _id: null,
+                count: { $sum: 1 }
                 }
             }
-        ]).then((result)=>{
-            res.json(result)
-        }).catch((err)=>{
-            console.log(err)
-        })
+            ]);
+            res.json(result);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
+        }
+    },
+    //จำนวนผู้ลงทะเบียนทั้งหมด
+    getcontpatient: async (req, res)=>{
+        try{
+            const count = await patient.countDocuments();
+            res.json({countpatient: count});
+        }catch(err){
+            res.status(500).json({ error:'เกิดข้อผิดผลาด' })
+        }
     }
 }
