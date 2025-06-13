@@ -96,10 +96,10 @@ module.exports = {
           },
           {
             "$lookup":{
-                "from":"assessment2q",
+                "from":"assessment9q",
                 "localField":"_id",
                 "foreignField":"pid",
-                "as":"2Q"
+                "as":"9Q"
              }
          },
          {
