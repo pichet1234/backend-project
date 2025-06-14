@@ -27,8 +27,11 @@ router.get('/getpatient', (req, res, next)=>{ patient.getpatient(req, res)});
 router.get('/getpatass', (req, res, next)=>{ patient.getpatass(req, res);});
 router.get('/getred', (req, res, next)=>{ patient.getrad(req, res); });
 router.get('/getpatientmild', (req, res, next)=>{ patient.getmild(req, res); });
+router.get('/getmoderate', (req, res,next)=>{ patient.getmoderate(req, res);});
+router.get('/countred', (req, res, next)=>{ patient.countred(req, res);});
+router.get('/countmoderate', (req, res, next)=>{ patient.countmoderate(req,res);});
 router.get('/getcountmild', (req, res, next)=>{ patient.getcountmild(req, res); });
-router.get('/countpatient', (req, res, next)=>{ patient.getcontpatient(req, res);})
+router.get('/countpatient', (req, res, next)=>{ patient.getcontpatient(req, res);});
 
 /**
  * user

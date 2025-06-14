@@ -84,7 +84,7 @@ module.exports = {
             console.log(err)
         })
     },
-    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=8
+    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=19
     getrad:(req, res)=>{
         patient.aggregate([{
             "$lookup":{
@@ -103,8 +103,8 @@ module.exports = {
              }
          },
          {
-          "$match": { // เงื่อนไข score >= 8 
-            "9Q.score": { "$gte": 8 }
+          "$match": { // เงื่อนไข score >= 19
+            "9Q.score": { "$gte": 19 }
             }
          }
         ]).then((result)=>{
@@ -112,6 +112,23 @@ module.exports = {
         }).catch((err)=>{
             console.log(err)
         })
+    },
+    getmoderate: async (req, res)=>{
+        try{
+            const result = await patient.aggregate([
+                {
+                    "$lookup":{
+                        "from":'assessment9q',
+                        "localField":'_id',
+                        "foreignField":'pid',
+                        "as":'9Q'
+                    }
+                }
+            ]);
+            res.json(result);
+        }catch(err){
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });           
+        }
     },
     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
     getmild: (req, res)=>{
