@@ -14,7 +14,7 @@ var assessments9qSchema = mongoose.Schema({
     q9:Number,
     score:Number,
     risklevel:String,
-    assessmentdate:{ type:Date, default: Date.now},
+    assessmentdate:Date,
     note:String
 
 },{ collection:'assessment9q'});
