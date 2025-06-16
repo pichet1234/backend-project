@@ -84,7 +84,7 @@ module.exports = {
             console.log(err)
         })
     },
-    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=8
+    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=19
     getrad:(req, res)=>{
         patient.aggregate([{
             "$lookup":{
@@ -104,7 +104,7 @@ module.exports = {
          },
          {
           "$match": { // เงื่อนไข score >= 8 
-            "9Q.score": { "$gte": 8 }
+            "9Q.score": { "$gte": 19 }
             }
          }
         ]).then((result)=>{
@@ -162,6 +162,28 @@ module.exports = {
             res.json(result);
         } catch (err) {
             console.error(err);
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
+        }
+    },
+    getModerate: async(req, res)=>{
+        try{
+            const result = await patient.aggregate([
+                {
+                    "$lookup":{
+                        "from":"assessment9q",
+                        "localField":"_id",
+                        "foreignField":"pid",
+                        "as":"9Q"
+                    }
+                },
+                {
+                    "$match":{
+                        "9Q.score":{ "$gt":13,"$lte":18 }
+                    }
+                }
+            ]);
+            res.json(result);
+        }catch(err){
             res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
