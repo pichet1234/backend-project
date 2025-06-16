@@ -103,7 +103,7 @@ module.exports = {
              }
          },
          {
-          "$match": { // เงื่อนไข score >= 8 
+          "$match": { // เงื่อนไข score >= 19
             "9Q.score": { "$gte": 19 }
             }
          }
@@ -126,7 +126,7 @@ module.exports = {
             },
             {
                 $match: {
-                "9Q.score": { $gte: 19 }// score > 7 แต่ไม่เกิน 12 score <=12 
+                "9Q.score": { $gte: 19 }// score > 19
                 }
             },
             {
@@ -177,7 +177,7 @@ module.exports = {
             },
             {
                 $match: {
-                "9Q.score": { "$gt": 13, "$lte":18 }// score > 7 แต่ไม่เกิน 12 score <=12 
+                "9Q.score": { "$gte": 13, "$lte":18 }// score >= 13 แต่ไม่เกิน 18 score <=12 (คะแนน 13 – 18 = มีอาการซึมเศร้าปานกลาง ควรพบแพทย์ (ส้ม))
                 }
             },
             {
