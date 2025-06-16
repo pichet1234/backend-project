@@ -282,6 +282,66 @@ module.exports = {
             res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
+    getpatientgreen:async(req, res)=>{
+        try{
+            const result = await patient.aggregate([
+                {
+                    "$lookup":{
+                        "from":"assessment9q",
+                        "localField":"_id",
+                        "foreignField":"pid",
+                        "as":"9Q"
+                    }
+                },
+                { 
+                    $unwind: "$9Q" 
+                },
+                {
+                    "$match":{
+                        "9Q.score":{ "$lt":7 }
+                    }
+                }
+            ]);
+            res.json(result);
+        }catch(err){
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
+        }
+    },
+    getcountgreen: async (req, res) => {
+        try {
+          const result = await patient.aggregate([
+            {
+              $lookup: {
+                from: "assessment9q",
+                localField: "_id",
+                foreignField: "pid",
+                as: "9Q"
+              }
+            },
+            { $unwind: "$9Q" },
+            {
+              $match: {
+                "9Q.score": { $lt: 7 }
+              }
+            },
+            {
+                $group: {
+                _id: null,
+                countgreen: { $sum: 1 }
+                }
+            }
+          ]);
+      
+          // ถ้าไม่มีข้อมูล จะได้ array ว่าง []
+          const count = result.length > 0 ? result[0].countgreen : 0;
+      
+          res.json({ countgreen: count });
+      
+        } catch (err) {
+          console.error(err);
+          res.status(500).json({ error: "เกิดข้อผิดพลาดในการนับผู้ป่วยสีเขียว" });
+        }
+      },
     //จำนวนผู้ลงทะเบียนทั้งหมด
     getcontpatient: async (req, res)=>{
         try{
