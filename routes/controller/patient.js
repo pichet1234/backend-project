@@ -113,28 +113,122 @@ module.exports = {
             console.log(err)
         })
     },
-    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
-    getmild: (req, res)=>{
-        patient.aggregate([
+    countred: async(req, res)=>{
+        try{
+            const result = await patient.aggregate([
             {
-                "$lookup":{
-                    "from":"assessment9q",
-                    "localField":"_id",
-                    "foreignField":"pid",
-                    "as":"9Q"
+                $lookup: {
+                from: "assessment9q",
+                localField: "_id",
+                foreignField: "pid",
+                as: "9Q"
                 }
             },
             {
-                "$match":{
-                    "9Q.score":{ "$gt":7,"$lte":12 }
+                $match: {
+                "9Q.score": { $gte: 19 }// score > 7 แต่ไม่เกิน 12 score <=12 
+                }
+            },
+            {
+                $group: {
+                _id: null,
+                count: { $sum: 1 }
                 }
             }
-        ]).then((result)=>{
-            res.json(result)
-        }).catch((err)=>{
-            console.log(err)
-        })
+            ]);
+            res.json(result);
+        }catch(err){
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });  
+        }
     },
+    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmoderate
+    getmoderate: async (req, res)=>{
+        try{
+            const result = await patient.aggregate([
+                {
+                    "$lookup":{
+                        "from":'assessment9q',
+                        "localField":'_id',
+                        "foreignField":'pid',
+                        "as":'9Q'
+                    }
+                },
+                {
+                    "$match":{
+                        "9Q.score":{ "$gt": 13, "$lte":18 }
+                    }
+                }
+            ]);
+            res.json(result);
+        }catch(err){
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });           
+        }
+    },
+    countmoderate:async (req, res)=>{
+        try{
+            const result = await patient.aggregate([
+            {
+                $lookup: {
+                from: "assessment9q",
+                localField: "_id",
+                foreignField: "pid",
+                as: "9Q"
+                }
+            },
+            {
+                $match: {
+                "9Q.score": { "$gt": 13, "$lte":18 }// score > 7 แต่ไม่เกิน 12 score <=12 
+                }
+            },
+            {
+                $group: {
+                _id: null,
+                count: { $sum: 1 }
+                }
+            }
+            ]);
+            res.json(result);
+        }catch(err){
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });           
+        }
+    },
+    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
+    getmild: async (req, res) => {
+            const { startDate, endDate } = req.body;
+
+            // แปลงเป็นวันที่
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); 
+
+            try {
+                const result = await patient.aggregate([
+                    {
+                        $lookup: {
+                            from: "assessment9q",
+                            localField: "_id",
+                            foreignField: "pid",
+                            as: "9Q"
+                        }
+                    },
+                    { $unwind: "$9Q" },
+                    {
+                        $match: {
+                            "9Q.score": { $gt: 7, $lte: 12 },
+                            "9Q.assessmentdate": { $gte: start, $lte: end }
+                        }
+                    },
+                    {
+                        $count: "mildCount"
+                    }
+                ]);
+
+                res.json(result[0] || { mildCount: 0 });
+            } catch (err) {
+                console.error(err);
+                res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
+            }
+        },
      //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
     getcountmild: async (req, res) => {
         try {
@@ -147,6 +241,7 @@ module.exports = {
                 as: "9Q"
                 }
             },
+                { $unwind: "$9Q" }, // แปลง array เป็น document
             {
                 $match: {
                 "9Q.score": { $gt: 7, $lte: 12 }// score > 7 แต่ไม่เกิน 12 score <=12 
