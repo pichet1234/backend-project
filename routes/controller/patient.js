@@ -218,13 +218,10 @@ module.exports = {
                             "9Q.score": { $gt: 7, $lte: 12 },
                             "9Q.assessmentdate": { $gte: start, $lte: end }
                         }
-                    },
-                    {
-                        $count: "mildCount"
                     }
                 ]);
 
-                res.json(result[0] || { mildCount: 0 });
+                res.json(result);
             } catch (err) {
                 console.error(err);
                 res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
