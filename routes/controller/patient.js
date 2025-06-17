@@ -194,8 +194,9 @@ module.exports = {
     },
     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
     getmild: async (req, res) => {
+	     console.log(req.body)
             const { startDate, endDate } = req.body;
-
+	
             // แปลงเป็นวันที่
             const start = new Date(startDate);
             const end = new Date(endDate);
