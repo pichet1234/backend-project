@@ -87,33 +87,41 @@ module.exports = {
         })
     },
     //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=19
-    getrad:(req, res)=>{
-        patient.aggregate([{
-            "$lookup":{
-             "from":"assessment2q",
-             "localField":"_id",
-        	 "foreignField":"pid",
-		     "as":"2Q"
-            }
-          },
-          {
-            "$lookup":{
-                "from":"assessment9q",
-                "localField":"_id",
-                "foreignField":"pid",
-                "as":"9Q"
-             }
-         },
-         {
-          "$match": { // เงื่อนไข score >= 19
-            "9Q.score": { "$gte": 19 }
-            }
-         }
-        ]).then((result)=>{
-            res.json(result)
-        }).catch((err)=>{
-            console.log(err)
-        })
+    getrad: async (req, res)=>{
+            const { startDate, endDate } = req.body;
+	
+            // แปลงเป็นวันที่
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); 
+        try{
+       const result =  await patient.aggregate([{
+                "$lookup":{
+                 "from":"assessment2q",
+                 "localField":"_id",
+                 "foreignField":"pid",
+                 "as":"2Q"
+                }
+              },
+              {
+                "$lookup":{
+                    "from":"assessment9q",
+                    "localField":"_id",
+                    "foreignField":"pid",
+                    "as":"9Q"
+                 }
+                },{ $unwind: "$9Q" },
+                {
+                    "$match": { // เงื่อนไข score >= 19
+                        "9Q.score": { "$gte": 19 },
+                        "9Q.assessmentdate": { $gte: start, $lte: end }
+                    }
+                }
+            ]);
+            res.json(result);
+        }catch(err){
+
+        }
     },
     countred: async(req, res)=>{
         try{
@@ -146,6 +154,12 @@ module.exports = {
     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmoderate
     getmoderate: async (req, res)=>{
         try{
+            const { startDate, endDate } = req.body;
+	
+            // แปลงเป็นวันที่
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); 
             const result = await patient.aggregate([
                 {
                     "$lookup":{
@@ -154,10 +168,11 @@ module.exports = {
                         "foreignField":'pid',
                         "as":'9Q'
                     }
-                },
+                },{ $unwind: "$9Q" },
                 {
                     "$match":{
-                        "9Q.score":{ "$gt": 13, "$lte":18 }
+                        "9Q.score":{ "$gt": 13, "$lte":18 },
+                        "9Q.assessmentdate": { $gte: start, $lte: end }
                     }
                 }
             ]);
@@ -196,7 +211,6 @@ module.exports = {
     },
     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
     getmild: async (req, res) => {
-	     console.log(req.body)
             const { startDate, endDate } = req.body;
 	
             // แปลงเป็นวันที่

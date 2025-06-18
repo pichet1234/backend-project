@@ -25,9 +25,9 @@ router.get('/', function(req, res, next) {
 router.post('/registerpatient', (req, res, next)=>{ patient.regispatient(req, res); });//ลงทะเบียน
 router.get('/getpatient', (req, res, next)=>{ patient.getpatient(req, res)});//รายชื่อผู้ที่ลงทะเบียนทั้งหมด
 router.get('/getgreen', (req, res, next)=>{ patient.getpatientgreen(req, res);});//ผู้ที่ไม่มีอาการซึมเศร้า (เขียว)
-router.get('/getred', (req, res, next)=>{ patient.getrad(req, res); });//ผู้ที่มีอาการซึมเศร้ารุนแรง ควรพบจิตแพทย์ (แดง)
+router.post('/getred', (req, res, next)=>{ patient.getrad(req, res); });//ผู้ที่มีอาการซึมเศร้ารุนแรง ควรพบจิตแพทย์ (แดง)
 router.post('/getpatientmild', (req, res, next)=>{ patient.getmild(req, res); });//ผู้ที่มีอาการซึมเศร้าเล็กน้อย ( เหลือง )
-router.get('/getmoderate', (req, res,next)=>{ patient.getmoderate(req, res);});//ผู้ที่มีอาการซึมเศร้าปานกลาง ควรพบแพทย์ (ส้ม)
+router.post('/getmoderate', (req, res,next)=>{ patient.getmoderate(req, res);});//ผู้ที่มีอาการซึมเศร้าปานกลาง ควรพบแพทย์ (ส้ม)
 router.get('/getpatass', (req, res, next)=>{ patient.getpatass(req, res);});//เช็คผู้ทำแบบประเมิน
 router.get('/countred', (req, res, next)=>{ patient.countred(req, res);});//นับจำนวนสีแดง
 router.get('/countmoderate', (req, res, next)=>{ patient.countmoderate(req,res);});//นับจำนวนสีส้ม
