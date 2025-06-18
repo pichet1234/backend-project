@@ -1,6 +1,10 @@
 var mongoose = require('../connect');
 var patientSchema = new mongoose.Schema({
-    cid:String,
+    cid:{
+        type: String,
+        required: true,
+        unique: true // เพื่อป้องกันข้อมูลซ้ำ
+    },
     prefix:String,
     fname:String,
     lname:String,
