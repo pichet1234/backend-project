@@ -152,13 +152,14 @@ module.exports = {
     },
     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmoderate
     getmoderate: async (req, res)=>{
+        const { startDate, endDate } = req.body;
+
+        // แปลงเป็นวันที่
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); 
+
         try{
-            const { startDate, endDate } = req.body;
-	
-            // แปลงเป็นวันที่
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); 
             const result = await patient.aggregate([
                 {
                     "$lookup":{
@@ -167,10 +168,11 @@ module.exports = {
                         "foreignField":'pid',
                         "as":'9Q'
                     }
-                },{ $unwind: "$9Q" },
+                },
+                { $unwind: "$9Q" },
                 {
-                    "$match":{
-                        "9Q.score":{ "$gt": 13, "$lte":18 },
+                    $match:{
+                        "9Q.score":{ $gt: 13, $lte:18 },
                         "9Q.assessmentdate": { $gte: start, $lte: end }
                     }
                 }
@@ -238,7 +240,6 @@ module.exports = {
 
                 res.json(result);
             } catch (err) {
-                console.error(err);
                 res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
             }
         },
