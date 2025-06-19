@@ -5,7 +5,6 @@ module.exports = {
     regispatient: async (req, res) => {
         try {
             const existing = await patient.findOne({ cid: req.body.cid });
-		console.log(existing);
             if(!existing){
                 const result = await patient.create({
                     cid: req.body.cid,
@@ -31,7 +30,7 @@ module.exports = {
             }else{
                 return res.status(400).json({
                     message: 'ท่านเคยลงทะเบียนแล้ว',
-                    patientId: existing._id?.toString()
+                    patientId: existing.pid
                 });
             }
     
