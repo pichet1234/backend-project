@@ -5,6 +5,7 @@ module.exports = {
     regispatient: async (req, res) => {
         try {
             const existing = await patient.findOne({ cid: req.body.cid });
+		console.log(existing);
             if(!existing){
                 const result = await patient.create({
                     cid: req.body.cid,
