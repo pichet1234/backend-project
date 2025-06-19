@@ -4,38 +4,37 @@ var patient = mongoose.model('patient', require('../schema/patient'));
 module.exports = {
     regispatient: async (req, res) => {
         try {
-            const result = await patient.create({
-                cid: req.body.cid,
-                prefix: req.body.prefix,
-                fname: req.body.fname,
-                lname: req.body.lname,
-                phone: req.body.phone,
-                address: {
-                    bannumber: req.body.banumber,
-                    moo: req.body.moo,
-                    subdistrict: req.body.subdistrict.name_th,
-                    district: req.body.district.name_th,
-                    province: req.body.province.name_th
-                },
-                latitude: req.body.latitude,
-                longitude: req.body.longitude
-            });
-    
-            res.status(201).json({
-                message: 'ลงทะเบียนสำเร็จ',
-                data: result,
-            });
-    
-        } catch (err) {
-            if (err.code === 11000) {
-                // รหัส 11000 = duplicate key error
-                const existing = await patient.findOne({ cid: req.body.cid });
+            const existing = await patient.findOne({ cid: req.body.cid });
+            if(!existing){
+                const result = await patient.create({
+                    cid: req.body.cid,
+                    prefix: req.body.prefix,
+                    fname: req.body.fname,
+                    lname: req.body.lname,
+                    phone: req.body.phone,
+                    address: {
+                        bannumber: req.body.banumber,
+                        moo: req.body.moo,
+                        subdistrict: req.body.subdistrict.name_th,
+                        district: req.body.district.name_th,
+                        province: req.body.province.name_th
+                    },
+                    latitude: req.body.latitude,
+                    longitude: req.body.longitude
+                });
+        
+                res.status(201).json({
+                    message: 'ลงทะเบียนสำเร็จ',
+                    data: result,
+                });
+            }else{
                 return res.status(400).json({
                     message: 'ท่านเคยลงทะเบียนแล้ว',
                     patientId: existing?._id
                 });
             }
     
+        } catch (err) {
             res.status(500).json({
                 message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
                 error: err.message
