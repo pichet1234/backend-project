@@ -30,7 +30,7 @@ module.exports = {
             }else{
                 return res.status(400).json({
                     message: 'ท่านเคยลงทะเบียนแล้ว',
-                    patientId: existing._id?.toString();
+                    patientId: existing._id?.toString()
                 });
             }
     
