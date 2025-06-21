@@ -4,6 +4,7 @@ const Followup = mongoose.model('followup', require('../schema/followup'));
 
 module.exports = {
     savefollow: async (req, res)=>{
+        console.log(req.body);
         try{
             const followup = new Followup({
                 pid: req.body.pid,
