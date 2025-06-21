@@ -4,6 +4,7 @@ var patient  = require('./controller/patient');
 var assessment2q = require('./controller/assessment_2q');
 var assessment9q = require('./controller/assessment_9q');
 var user = require('./controller/user');
+var followup = require('./controller/followup');
 
 router.use(function(req, res, next){
   res.setHeader('Access-Control-Allow-Origin','*');
@@ -48,5 +49,9 @@ router.get('/users', (req, res)=>{ user.getuser(req, res); });
 */  
 router.post('/2q', (req,res, next)=>{ assessment2q.addaess(req, res); })
 router.post('/9q' , (req, res, next)=>{ assessment9q.addaess(req, res); })
+/**
+ * followup
+ */
+router.post('/asfollow', (req, res, next)=>{ followup.savefollow(req, res); })
 
 module.exports = router;

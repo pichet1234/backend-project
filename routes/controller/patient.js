@@ -135,6 +135,7 @@ module.exports = {
             },
             {
                 $match: {
+                "9Q.round": 1,
                 "9Q.score": { $gte: 19 }// score > 19
                 }
             },
@@ -195,6 +196,7 @@ module.exports = {
             },
             {
                 $match: {
+                "9Q.round": 1,
                 "9Q.score": { "$gte": 13, "$lte":18 }// score >= 13 แต่ไม่เกิน 18 score <=12 (คะแนน 13 – 18 = มีอาการซึมเศร้าปานกลาง ควรพบแพทย์ (ส้ม))
                 }
             },
@@ -258,6 +260,7 @@ module.exports = {
                 { $unwind: "$9Q" }, // แปลง array เป็น document
             {
                 $match: {
+                "9Q.round": 1,
                 "9Q.score": { $gt: 7, $lte: 12 }// score > 7 แต่ไม่เกิน 12 score <=12 
                 }
             },
@@ -312,6 +315,7 @@ module.exports = {
                 },
                 {
                     "$match":{
+                        "9Q.round": 1,
                         "9Q.score":{ "$lt":7 }
                     }
                 }
@@ -335,6 +339,7 @@ module.exports = {
             { $unwind: "$9Q" },
             {
               $match: {
+                "9Q.round": 1,
                 "9Q.score": { $lt: 7 }
               }
             },
