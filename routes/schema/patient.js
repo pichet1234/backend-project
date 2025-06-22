@@ -8,6 +8,7 @@ var patientSchema = new mongoose.Schema({
     prefix:String,
     fname:String,
     lname:String,
+    birthday: Date ,
     phone:String,
     address: {
         bannumber:String,

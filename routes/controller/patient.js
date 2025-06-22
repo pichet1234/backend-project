@@ -12,6 +12,7 @@ module.exports = {
                     fname: req.body.fname,
                     lname: req.body.lname,
                     phone: req.body.phone,
+                    birthday: req.body.birthday,
                     address: {
                         bannumber: req.body.banumber,
                         moo: req.body.moo,
