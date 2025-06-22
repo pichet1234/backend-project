@@ -1,18 +1,31 @@
 var mongoose = require('../connect');
 var patient = mongoose.model('patient', require('../schema/patient'));
 
+function convertThaiDate(input) {
+    if (!input || typeof input !== 'string') return null;
+
+    const [day, month, year] = input.split('/').map(Number);
+
+    if (!day || !month || !year || year < 2400) return null; // ตรวจความถูกต้องคร่าวๆ
+
+    const gregorianYear = year - 543;
+    return new Date(gregorianYear, month - 1, day); // month เริ่มจาก 0
+}
+
 module.exports = {
     regispatient: async (req, res) => {
         try {
             const existing = await patient.findOne({ cid: req.body.cid });
             if(!existing){
+                            // แปลง birthday จาก "01/08/2539" ➝ Date Object (ISO)
+            const birthday = convertThaiDate(req.body.birthday);
                 const result = await patient.create({
                     cid: req.body.cid,
                     prefix: req.body.prefix,
                     fname: req.body.fname,
                     lname: req.body.lname,
                     phone: req.body.phone,
-                    birthday: req.body.birthday,
+                    birthday: birthday,
                     address: {
                         bannumber: req.body.banumber,
                         moo: req.body.moo,
