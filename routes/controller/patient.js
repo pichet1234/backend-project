@@ -99,6 +99,32 @@ module.exports = {
             console.log(err)
         })
     },
+      getNotAssessed2Q: async (req, res)=>{
+        try{
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                      from: "assessment2q",
+                      localField: "_id",
+                      foreignField: "pid",
+                      as: "2Q"
+                    }
+                  },
+                  {
+                    $match: {
+                      $expr: { $eq: [{ $size: "$2Q" }, 0] }
+                    }
+                  }
+              ]);
+          
+              res.json(result); // ส่งไปยัง frontend
+        }catch(error){
+            res.status(500).json({
+                message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
+                error: err.message
+            });
+        }
+      },
     //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=19
     getrad: async (req, res)=>{
             const { startDate, endDate } = req.body;

@@ -35,7 +35,7 @@ router.get('/countmoderate', (req, res, next)=>{ patient.countmoderate(req,res);
 router.get('/getcountmild', (req, res, next)=>{ patient.getcountmild(req, res); });//นับจำนวนสีเหลือง
 router.get('/getcountgreen', (req, res, next)=>{ patient.getcountgreen(req, res);});//นับจำนวนสีเขียว
 router.get('/countpatient', (req, res, next)=>{ patient.getcontpatient(req, res);});//นับจำนวนผู้ที่ลงทะเบียนทั้งหมด
-
+router.get('/notas2q', (req, res, next)=>{ patient.getNotAssessed2Q(req, res); });
 /**
  * user
  * */
