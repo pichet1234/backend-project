@@ -70,7 +70,7 @@ module.exports = {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999); 
         try{
-            const result = patient.aggregate([
+            const result = await patient.aggregate([
                 {
                     "$lookup":{
                         "from":'assessment2q',
