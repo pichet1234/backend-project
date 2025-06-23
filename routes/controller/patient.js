@@ -126,6 +126,7 @@ module.exports = {
                 },{ $unwind: "$9Q" },
                 {
                     "$match": { // เงื่อนไข score >= 19
+                        "9Q.round": 1,
                         "9Q.score": { "$gte": 19 },
                         "9Q.assessmentdate": { $gte: start, $lte: end }
                     }
@@ -187,6 +188,7 @@ module.exports = {
                 { $unwind: "$9Q" },
                 {
                     $match:{
+                        "9Q.round": 1,
                         "9Q.score":{ $gte: 13, $lte:18 },
                         "9Q.assessmentdate": { $gte: start, $lte: end }
                     }
