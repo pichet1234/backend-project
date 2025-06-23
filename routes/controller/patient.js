@@ -62,6 +62,38 @@ module.exports = {
             console.log(err)
         })
     },
+    assfortwoq: async (req, res)=>{
+        const { startDate, endDate } = req.body;
+	
+        // แปลงเป็นวันที่
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); 
+        try{
+            const result = patient.aggregate([
+                {
+                    "$lookup":{
+                        "from":'assessment2q',
+                        "localField":'_id',
+                        "foreignField":'pid',
+                        "as":'2Q'
+                    }
+                },
+                {
+                    "$unwind": "$2Q" 
+                },
+                {
+                    "$match":{ "2Q.assessmentdate": { $gte: start, $lte: end }}
+                }
+            ]);
+            res.json(result); // ส่งไปยัง frontend
+        }catch(error){
+            res.status(500).json({
+                message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
+                error: err.message
+            });
+        }
+    },
     getpatass: (req, res)=>{
         patient.aggregate([
             {
