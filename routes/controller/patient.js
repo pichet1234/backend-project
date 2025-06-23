@@ -248,6 +248,7 @@ module.exports = {
                     { $unwind: "$9Q" },
                     {
                         $match: {
+                            "9Q.round": 1,
                             "9Q.score": { $gt: 7, $lte: 12 },
                             "9Q.assessmentdate": { $gte: start, $lte: end }
                         }
