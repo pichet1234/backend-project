@@ -446,37 +446,39 @@ module.exports = {
         }
     },
     // followup
-    followupmild: async (req, res)=>{
-        try{
-            const result = await patient.aggregate([
-                {
-                    $lookup: {
-                      from: "assessment9q",
-                      localField: "_id",
-                      foreignField: "pid",
-                      as: "assessment"
-                    }
-                  },{
-                        $lookup:{
-                            from:"followup",
-                            localField:"_id",
-                            foreignField:"pid",
-                            as: "followup"
-                        }		
-                    },
-                  {
-                    $match: {
-                      "9Q": {
-                        $elemMatch: {
-                          score: { $gt: 7, $lte: 12 }
-                        }
-                      }
-                    }
-                  }                
-            ]);
-            res.json(result);
-        }catch(error){
-            res.status(500).json({ error:'เกิดข้อผิดผลาด' })
+    followupmild: async (req, res) => {
+        try {
+          const result = await patient.aggregate([
+            {
+              $lookup: {
+                from: "assessment9q",
+                localField: "_id",
+                foreignField: "pid",
+                as: "assessment"
+              }
+            },
+            {
+              $lookup: {
+                from: "followup",
+                localField: "_id",
+                foreignField: "pid",
+                as: "followup"
+              }
+            },
+            {
+              $match: {
+                assessment: {
+                  $elemMatch: {
+                    score: { $gt: 7, $lte: 12 }
+                  }
+                }
+              }
+            }
+          ]);
+          res.json(result);
+        } catch (error) {
+          res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
         }
-    }
+      }
+      
 }
