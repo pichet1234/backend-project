@@ -446,7 +446,7 @@ module.exports = {
         }
     },
     // followup
-    followup: async (req, res)=>{
+    followupmild: async (req, res)=>{
         try{
             const result = await patient.aggregate([
                 {
