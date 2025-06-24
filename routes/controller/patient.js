@@ -16,9 +16,9 @@ module.exports = {
     regispatient: async (req, res) => {
         try {
             const existing = await patient.findOne({ cid: req.body.cid });
-            if(!existing){
-                            // แปลง birthday จาก "01/08/2539" ➝ Date Object (ISO)
-            const birthday = convertThaiDate(req.body.birthday);
+            if (!existing) {
+                // แปลง birthday จาก "01/08/2539" ➝ Date Object (ISO)
+                const birthday = convertThaiDate(req.body.birthday);
                 const result = await patient.create({
                     cid: req.body.cid,
                     prefix: req.body.prefix,
@@ -36,18 +36,18 @@ module.exports = {
                     latitude: req.body.latitude,
                     longitude: req.body.longitude
                 });
-        
+
                 res.status(201).json({
                     message: 'ลงทะเบียนสำเร็จ',
                     data: result,
                 });
-            }else{
+            } else {
                 return res.status(400).json({
                     message: 'ท่านเคยลงทะเบียนแล้ว',
                     patientId: existing._id
                 });
             }
-    
+
         } catch (err) {
             res.status(500).json({
                 message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
@@ -55,296 +55,296 @@ module.exports = {
             });
         }
     },
-    getpatient: (req, res)=>{
-        patient.find({ }).then((result)=>{
+    getpatient: (req, res) => {
+        patient.find({}).then((result) => {
             res.send(result)
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err)
         })
     },
-    assfortwoq: async (req, res)=>{
+    assfortwoq: async (req, res) => {
         const { startDate, endDate } = req.body;
-	
+
         // แปลงเป็นวันที่
         const start = new Date(startDate);
         const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); 
-        try{
+        end.setHours(23, 59, 59, 999);
+        try {
             const result = await patient.aggregate([
                 {
-                    "$lookup":{
-                        "from":'assessment2q',
-                        "localField":'_id',
-                        "foreignField":'pid',
-                        "as":'2Q'
+                    "$lookup": {
+                        "from": 'assessment2q',
+                        "localField": '_id',
+                        "foreignField": 'pid',
+                        "as": '2Q'
                     }
                 },
                 {
-                    "$unwind": "$2Q" 
+                    "$unwind": "$2Q"
                 },
                 {
-                    "$match":{ "2Q.assessmentdate": { $gte: start, $lte: end }}
+                    "$match": { "2Q.assessmentdate": { $gte: start, $lte: end } }
                 }
             ]);
             res.json(result); // ส่งไปยัง frontend
-        }catch(error){
+        } catch (error) {
             res.status(500).json({
                 message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
                 error: err.message
             });
         }
     },
-    getpatass: (req, res)=>{
+    getpatass: (req, res) => {
         patient.aggregate([
             {
-                "$lookup":{
-                    "from":'assessment2q',
-                    "localField":'_id',
-                    "foreignField":'pid',
-                    "as":'2Q'
+                "$lookup": {
+                    "from": 'assessment2q',
+                    "localField": '_id',
+                    "foreignField": 'pid',
+                    "as": '2Q'
                 }
             },
             {
-                "$lookup":{
-                    "from":'assessment9q',
-                    "localField":'_id',
-                    "foreignField":'pid',
-                    "as":'9Q'
-                }
-            },
-            {
-              $group: {
-                _id: "$9Q.risklevel",
-                patients: {
-                  $push: {
-                    cid: "$cid",
-                    name: { $concat: ["$prefix", "$fname", " ", "$lname"] },
-                    score: "$9Q.score",
-                    assessmentdate: "$9Q.assessmentdate"
-                  }
-                }
-              }
-            }
-        ]).then((result)=>{
-            res.json(result)
-        }).catch((err)=>{
-            console.log(err)
-        })
-    },
-      getNotAssessed2Q: async (req, res)=>{
-        try{
-            const result = await patient.aggregate([
-                {
-                    $lookup: {
-                      from: "assessment2q",
-                      localField: "_id",
-                      foreignField: "pid",
-                      as: "2Q"
-                    }
-                  },
-                  {
-                    $match: {
-                      $expr: { $eq: [{ $size: "$2Q" }, 0] }
-                    }
-                  }
-              ]);
-          
-              res.json(result); // ส่งไปยัง frontend
-        }catch(error){
-            res.status(500).json({
-                message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
-                error: err.message
-            });
-        }
-      },
-    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=19
-    getrad: async (req, res)=>{
-            const { startDate, endDate } = req.body;
-	
-            // แปลงเป็นวันที่
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); 
-        try{
-       const result =  await patient.aggregate([{
-                "$lookup":{
-                 "from":"assessment2q",
-                 "localField":"_id",
-                 "foreignField":"pid",
-                 "as":"2Q"
-                }
-              },
-              {
-                "$lookup":{
-                    "from":"assessment9q",
-                    "localField":"_id",
-                    "foreignField":"pid",
-                    "as":"9Q"
-                 }
-                },{ $unwind: "$9Q" },
-                {
-                    "$match": { // เงื่อนไข score >= 19
-                        "9Q.round": 1,
-                        "9Q.score": { "$gte": 19 },
-                        "9Q.assessmentdate": { $gte: start, $lte: end }
-                    }
-                }
-            ]);
-            res.json(result);
-        }catch(err){
-
-        }
-    },
-    countred: async(req, res)=>{
-        try{
-            const result = await patient.aggregate([
-            {
-                $lookup: {
-                from: "assessment9q",
-                localField: "_id",
-                foreignField: "pid",
-                as: "9Q"
-                }
-            },
-            {
-                $match: {
-                "9Q.round": 1,
-                "9Q.score": { $gte: 19 }// score > 19
+                "$lookup": {
+                    "from": 'assessment9q',
+                    "localField": '_id',
+                    "foreignField": 'pid',
+                    "as": '9Q'
                 }
             },
             {
                 $group: {
-                _id: null,
-                count: { $sum: 1 }
+                    _id: "$9Q.risklevel",
+                    patients: {
+                        $push: {
+                            cid: "$cid",
+                            name: { $concat: ["$prefix", "$fname", " ", "$lname"] },
+                            score: "$9Q.score",
+                            assessmentdate: "$9Q.assessmentdate"
+                        }
+                    }
                 }
             }
+        ]).then((result) => {
+            res.json(result)
+        }).catch((err) => {
+            console.log(err)
+        })
+    },
+    getNotAssessed2Q: async (req, res) => {
+        try {
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                        from: "assessment2q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "2Q"
+                    }
+                },
+                {
+                    $match: {
+                        $expr: { $eq: [{ $size: "$2Q" }, 0] }
+                    }
+                }
             ]);
-            res.json(result);
-        }catch(err){
-            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });  
+
+            res.json(result); // ส่งไปยัง frontend
+        } catch (error) {
+            res.status(500).json({
+                message: 'เกิดข้อผิดพลาดในการลงทะเบียน',
+                error: err.message
+            });
         }
     },
-    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmoderate
-    getmoderate: async (req, res)=>{
+    //ดึงรายชื่อตามเงื่อนไขทำแบบคัดกรอง 2Q และแบบสอบถาม 9Q แบ่งตาม lavel >=19
+    getrad: async (req, res) => {
         const { startDate, endDate } = req.body;
 
         // แปลงเป็นวันที่
         const start = new Date(startDate);
         const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); 
+        end.setHours(23, 59, 59, 999);
+        try {
+            const result = await patient.aggregate([{
+                "$lookup": {
+                    "from": "assessment2q",
+                    "localField": "_id",
+                    "foreignField": "pid",
+                    "as": "2Q"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "assessment9q",
+                    "localField": "_id",
+                    "foreignField": "pid",
+                    "as": "9Q"
+                }
+            }, { $unwind: "$9Q" },
+            {
+                "$match": { // เงื่อนไข score >= 19
+                    "9Q.round": 1,
+                    "9Q.score": { "$gte": 19 },
+                    "9Q.assessmentdate": { $gte: start, $lte: end }
+                }
+            }
+            ]);
+            res.json(result);
+        } catch (err) {
 
-        try{
+        }
+    },
+    countred: async (req, res) => {
+        try {
             const result = await patient.aggregate([
                 {
-                    "$lookup":{
-                        "from":'assessment9q',
-                        "localField":'_id',
-                        "foreignField":'pid',
-                        "as":'9Q'
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "9Q"
+                    }
+                },
+                {
+                    $match: {
+                        "9Q.round": 1,
+                        "9Q.score": { $gte: 19 }// score > 19
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: { $sum: 1 }
+                    }
+                }
+            ]);
+            res.json(result);
+        } catch (err) {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
+        }
+    },
+    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmoderate
+    getmoderate: async (req, res) => {
+        const { startDate, endDate } = req.body;
+
+        // แปลงเป็นวันที่
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
+        try {
+            const result = await patient.aggregate([
+                {
+                    "$lookup": {
+                        "from": 'assessment9q',
+                        "localField": '_id',
+                        "foreignField": 'pid',
+                        "as": '9Q'
                     }
                 },
                 { $unwind: "$9Q" },
                 {
-                    $match:{
+                    $match: {
                         "9Q.round": 1,
-                        "9Q.score":{ $gte: 13, $lte:18 },
+                        "9Q.score": { $gte: 13, $lte: 18 },
                         "9Q.assessmentdate": { $gte: start, $lte: end }
                     }
                 }
             ]);
             res.json(result);
-        }catch(err){
-            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });           
+        } catch (err) {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
-    countmoderate:async (req, res)=>{
-        try{
+    countmoderate: async (req, res) => {
+        try {
             const result = await patient.aggregate([
-            {
-                $lookup: {
-                from: "assessment9q",
-                localField: "_id",
-                foreignField: "pid",
-                as: "9Q"
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "9Q"
+                    }
+                },
+                {
+                    $match: {
+                        "9Q.round": 1,
+                        "9Q.score": { "$gte": 13, "$lte": 18 }// score >= 13 แต่ไม่เกิน 18 score <=12 (คะแนน 13 – 18 = มีอาการซึมเศร้าปานกลาง ควรพบแพทย์ (ส้ม))
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: { $sum: 1 }
+                    }
                 }
-            },
-            {
-                $match: {
-                "9Q.round": 1,
-                "9Q.score": { "$gte": 13, "$lte":18 }// score >= 13 แต่ไม่เกิน 18 score <=12 (คะแนน 13 – 18 = มีอาการซึมเศร้าปานกลาง ควรพบแพทย์ (ส้ม))
-                }
-            },
-            {
-                $group: {
-                _id: null,
-                count: { $sum: 1 }
-                }
-            }
             ]);
             res.json(result);
-        }catch(err){
-            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });           
+        } catch (err) {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
     getmild: async (req, res) => {
-            const { startDate, endDate } = req.body;
-	
-            // แปลงเป็นวันที่
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); 
+        const { startDate, endDate } = req.body;
 
-            try {
-                const result = await patient.aggregate([
-                    {
-                        $lookup: {
-                            from: "assessment9q",
-                            localField: "_id",
-                            foreignField: "pid",
-                            as: "9Q"
-                        }
-                    },
-                    { $unwind: "$9Q" },
-                    {
-                        $match: {
-                            "9Q.round": 1,
-                            "9Q.score": { $gt: 7, $lte: 12 },
-                            "9Q.assessmentdate": { $gte: start, $lte: end }
-                        }
+        // แปลงเป็นวันที่
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
+        try {
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "9Q"
                     }
-                ]);
+                },
+                { $unwind: "$9Q" },
+                {
+                    $match: {
+                        "9Q.round": 1,
+                        "9Q.score": { $gt: 7, $lte: 12 },
+                        "9Q.assessmentdate": { $gte: start, $lte: end }
+                    }
+                }
+            ]);
 
-                res.json(result);
-            } catch (err) {
-                res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
-            }
-        },
-     //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
+            res.json(result);
+        } catch (err) {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
+        }
+    },
+    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmild
     getcountmild: async (req, res) => {
         try {
             const result = await patient.aggregate([
-            {
-                $lookup: {
-                from: "assessment9q",
-                localField: "_id",
-                foreignField: "pid",
-                as: "9Q"
-                }
-            },
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "9Q"
+                    }
+                },
                 { $unwind: "$9Q" }, // แปลง array เป็น document
-            {
-                $match: {
-                "9Q.round": 1,
-                "9Q.score": { $gt: 7, $lte: 12 }// score > 7 แต่ไม่เกิน 12 score <=12 
+                {
+                    $match: {
+                        "9Q.round": 1,
+                        "9Q.score": { $gt: 7, $lte: 12 }// score > 7 แต่ไม่เกิน 12 score <=12 
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: { $sum: 1 }
+                    }
                 }
-            },
-            {
-                $group: {
-                _id: null,
-                count: { $sum: 1 }
-                }
-            }
             ]);
             res.json(result);
         } catch (err) {
@@ -352,133 +352,246 @@ module.exports = {
             res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
-    getModerate: async(req, res)=>{
-        try{
+    getModerate: async (req, res) => {
+        try {
             const result = await patient.aggregate([
                 {
-                    "$lookup":{
-                        "from":"assessment9q",
-                        "localField":"_id",
-                        "foreignField":"pid",
-                        "as":"9Q"
+                    "$lookup": {
+                        "from": "assessment9q",
+                        "localField": "_id",
+                        "foreignField": "pid",
+                        "as": "9Q"
                     }
                 },
                 {
-                    "$match":{
-                        "9Q.score":{ "$gt":13,"$lte":18 }
+                    "$match": {
+                        "9Q.score": { "$gt": 13, "$lte": 18 }
                     }
                 }
             ]);
             res.json(result);
-        }catch(err){
+        } catch (err) {
             res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
-    getpatientgreen:async(req, res)=>{
-        try{
+    getpatientgreen: async (req, res) => {
+        try {
             const result = await patient.aggregate([
                 {
-                    "$lookup":{
-                        "from":"assessment9q",
-                        "localField":"_id",
-                        "foreignField":"pid",
-                        "as":"9Q"
+                    "$lookup": {
+                        "from": "assessment9q",
+                        "localField": "_id",
+                        "foreignField": "pid",
+                        "as": "9Q"
                     }
                 },
-                { 
-                    $unwind: "$9Q" 
+                {
+                    $unwind: "$9Q"
                 },
                 {
-                    "$match":{
+                    "$match": {
                         "9Q.round": 1,
-                        "9Q.score":{ "$lt":7 }
+                        "9Q.score": { "$lt": 7 }
                     }
                 }
             ]);
             res.json(result);
-        }catch(err){
+        } catch (err) {
             res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
     getcountgreen: async (req, res) => {
         try {
-          const result = await patient.aggregate([
-            {
-              $lookup: {
-                from: "assessment9q",
-                localField: "_id",
-                foreignField: "pid",
-                as: "9Q"
-              }
-            },
-            { $unwind: "$9Q" },
-            {
-              $match: {
-                "9Q.round": 1,
-                "9Q.score": { $lt: 7 }
-              }
-            },
-            {
-                $group: {
-                _id: null,
-                countgreen: { $sum: 1 }
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "9Q"
+                    }
+                },
+                { $unwind: "$9Q" },
+                {
+                    $match: {
+                        "9Q.round": 1,
+                        "9Q.score": { $lt: 7 }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        countgreen: { $sum: 1 }
+                    }
                 }
-            }
-          ]);
-      
-          // ถ้าไม่มีข้อมูล จะได้ array ว่าง []
-          const count = result.length > 0 ? result[0].countgreen : 0;
-      
-          res.json({ countgreen: count });
-      
+            ]);
+
+            // ถ้าไม่มีข้อมูล จะได้ array ว่าง []
+            const count = result.length > 0 ? result[0].countgreen : 0;
+
+            res.json({ countgreen: count });
+
         } catch (err) {
-          console.error(err);
-          res.status(500).json({ error: "เกิดข้อผิดพลาดในการนับผู้ป่วยสีเขียว" });
+            console.error(err);
+            res.status(500).json({ error: "เกิดข้อผิดพลาดในการนับผู้ป่วยสีเขียว" });
         }
-      },
+    },
     //จำนวนผู้ลงทะเบียนทั้งหมด
-    getcontpatient: async (req, res)=>{
-        try{
+    getcontpatient: async (req, res) => {
+        try {
             const count = await patient.countDocuments();
-            res.json({countpatient: count});
-        }catch(err){
-            res.status(500).json({ error:'เกิดข้อผิดผลาด' })
+            res.json({ countpatient: count });
+        } catch (err) {
+            res.status(500).json({ error: 'เกิดข้อผิดผลาด' })
         }
     },
     // followup
     followupmild: async (req, res) => {
         try {
-          const result = await patient.aggregate([
-            {
-              $lookup: {
-                from: "assessment9q",
-                localField: "_id",
-                foreignField: "pid",
-                as: "assessment"
-              }
-            },
-            {
-              $lookup: {
-                from: "followup",
-                localField: "_id",
-                foreignField: "pid",
-                as: "followup"
-              }
-            },
-            {
-              $match: {
-                assessment: {
-                  $elemMatch: {
-                    score: { $gt: 7, $lte: 12 }
-                  }
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "assessment"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "followup",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "followup"
+                    }
+                },
+                {
+                    $match: {
+                        assessment: {
+                            $elemMatch: {
+                                score: { $gt: 7, $lte: 12 }
+                            }
+                        }
+                    }
                 }
-              }
-            }
-          ]);
-          res.json(result);
+            ]);
+            res.json(result);
         } catch (error) {
-          res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
+            res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
         }
-      }
-      
+    },
+    followupmoderate: async (req, res) => {
+        try {
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "assessment"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "followup",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "followup"
+                    }
+                },
+                {
+                    $match: {
+                        assessment: {
+                            $elemMatch: {
+                                score: { $gt: 13, $lte: 18 }
+                            }
+                        }
+                    }
+                }
+            ]);
+            res.json(result);
+        } catch (error) {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาด' })
+        }
+    },
+    followupred: async (req, res) => {
+        try {
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                        from: "assessment9q",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "assessment"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "followup",
+                        localField: "_id",
+                        foreignField: "pid",
+                        as: "followup"
+                    }
+                },
+                {
+                    $match: {
+                        assessment: {
+                            $elemMatch: {
+                                score: { $gte: 19 }
+                            }
+                        }
+                    }
+                }
+            ]);
+            res.json(result);
+        } catch (error) {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาด' })
+        }
+    },
+    viewPatient: async (req, res) => {
+        try {
+            const viewpat = await patient.findOne({ _id: req.body.pid });
+            if (viewpat) {
+                res.json(viewpat);
+            } else {
+                res.status(404).json({ message: 'ไม่พบข้อมูลผู้ป่วย' });
+            }
+        } catch {
+            res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
+        }
+    },
+    editPatient: async (req, res) => {
+        try {
+            const { pid, cid, prefix, fname, lname, birthday, phone, address, latitude, longitude } = req.body;
+            const updated = await patient.findByIdAndUpdate(
+                pid,
+                {
+                    cid,
+                    prefix,
+                    fname,
+                    lname,
+                    birthday,
+                    phone,
+                    address,     // { bannumber, moo, subdistrict, district, province }
+                    latitude,
+                    longitude
+                },
+                { new: true, runValidators: true }
+            );
+
+            if (updated) {
+                res.json({ message: 'แก้ไขข้อมูลผู้ป่วยสำเร็จ', data: updated });
+            } else {
+                res.status(404).json({ message: 'ไม่พบผู้ป่วยที่ต้องการแก้ไข' });
+            }
+        } catch (error) {
+            console.error(error);
+            // ตรวจสอบกรณี duplicate cid
+            if (error.code === 11000 && error.keyPattern?.cid) {
+                res.status(400).json({ error: 'เลขบัตรประชาชนนี้มีอยู่แล้วในระบบ' });
+            } else {
+                res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
+            }
+        }
+    }
 }

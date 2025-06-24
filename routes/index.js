@@ -37,6 +37,8 @@ router.get('/getcountgreen', (req, res, next)=>{ patient.getcountgreen(req, res)
 router.get('/countpatient', (req, res, next)=>{ patient.getcontpatient(req, res);});//นับจำนวนผู้ที่ลงทะเบียนทั้งหมด
 router.get('/notas2q', (req, res, next)=>{ patient.getNotAssessed2Q(req, res); });
 router.post('/asstwoqui' ,(req, res, next)=>{ patient.assfortwoq(req, res);})//กรองและออกรายงาน
+router.post('/viewpatient' ,(req, res, next)=>{ patient.viewPatient(req, res);});//ดูประชาชนเป็นรายบุคคล
+router.post('/editpatient', (req, res, next)=>{ patient.editPatient(req, res);})//edit patient
 /**
  * user
  * */
@@ -55,6 +57,10 @@ router.post('/9q' , (req, res, next)=>{ assessment9q.addaess(req, res); })
  * followup
  */
 router.post('/asfollow', (req, res, next)=>{ followup.savefollow(req, res); });
-router.get('/getfollowupmild', (req, res, next)=>{ patient.followupmild(req, res); })
+router.get('/getfollowupmild', (req, res, next)=>{ patient.followupmild(req, res); });
+router.get('/getfollowupmoderate', (req, res, next)=>{ patient.followupmoderate(req, res);});
+router.get('/getfollowupred', (req, res, next)=>{ patient.followupred(req, res);});
+
+
 
 module.exports = router;
