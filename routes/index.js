@@ -54,6 +54,7 @@ router.post('/9q' , (req, res, next)=>{ assessment9q.addaess(req, res); })
 /**
  * followup
  */
-router.post('/asfollow', (req, res, next)=>{ followup.savefollow(req, res); })
+router.post('/asfollow', (req, res, next)=>{ followup.savefollow(req, res); });
+router.get('/getfollowup', (req, res, next)=>{ patient.followup(req, res); })
 
 module.exports = router;

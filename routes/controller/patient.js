@@ -444,5 +444,39 @@ module.exports = {
         }catch(err){
             res.status(500).json({ error:'เกิดข้อผิดผลาด' })
         }
+    },
+    // followup
+    followup: async (req, res)=>{
+        try{
+            const result = await patient.aggregate([
+                {
+                    $lookup: {
+                      from: "assessment9q",
+                      localField: "_id",
+                      foreignField: "pid",
+                      as: "9Q"
+                    }
+                  },{
+                        $lookup:{
+                            from:"followup",
+                            localField:"_id",
+                            foreignField:"pid",
+                            as: "followup"
+                        }		
+                    },
+                  {
+                    $match: {
+                      "9Q": {
+                        $elemMatch: {
+                          score: { $gt: 7, $lte: 12 }
+                        }
+                      }
+                    }
+                  }                
+            ]);
+            res.json(result);
+        }catch(error){
+            res.status(500).json({ error:'เกิดข้อผิดผลาด' })
+        }
     }
 }
