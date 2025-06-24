@@ -454,7 +454,7 @@ module.exports = {
                       from: "assessment9q",
                       localField: "_id",
                       foreignField: "pid",
-                      as: "9Q"
+                      as: "assessment9q"
                     }
                   },{
                         $lookup:{
