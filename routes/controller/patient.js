@@ -503,7 +503,7 @@ module.exports = {
                     $match: {
                         assessment: {
                             $elemMatch: {
-                                score: { $gt: 13, $lte: 18 }
+                                score: { "$gte": 13, "$lte": 18 }
                             }
                         }
                     }
