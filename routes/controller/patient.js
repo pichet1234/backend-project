@@ -1,3 +1,4 @@
+const axios = require('axios');
 var mongoose = require('../connect');
 var patient = mongoose.model('patient', require('../schema/patient'));
 
@@ -592,6 +593,25 @@ module.exports = {
             } else {
                 res.status(500).json({ error: 'เกิดข้อผิดพลาด' });
             }
+        }
+    },
+    sendLine: async (req, res) => {
+        const { message } = req.body;
+        try {
+            const response = await axios.post(
+                'https://notify-api.line.me/api/notify',
+                new URLSearchParams({ message }),
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Authorization: `Bearer YOUR_LINE_NOTIFY_TOKEN`
+                    }
+                }
+            );
+            res.status(200).json({ success: true, data: response.data });
+        } catch (err) {
+            console.error('Error sending to LINE Notify:', err);
+            res.status(500).json({ success: false, error: err });
         }
     }
 }
