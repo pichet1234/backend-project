@@ -1,6 +1,7 @@
 const axios = require('axios');
 var mongoose = require('../connect');
 var patient = mongoose.model('patient', require('../schema/patient'));
+const dayjs = require('dayjs');
 
 function convertThaiDate(input) {
     if (!input || typeof input !== 'string') return null;
