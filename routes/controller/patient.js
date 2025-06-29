@@ -563,9 +563,10 @@ module.exports = {
     },
     editPatient: async (req, res) => {
         try {
-            const { pid, cid, prefix, fname, lname, birthday, phone, address, latitude, longitude } = req.body;
+            const id = req.body.pid
+            const {  cid, prefix, fname, lname, birthday, phone, address, latitude, longitude } = req.body;
             const updated = await patient.findByIdAndUpdate(
-                pid,
+                id,
                 {
                     cid,
                     prefix,
