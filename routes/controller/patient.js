@@ -565,8 +565,8 @@ module.exports = {
     editPatient: async (req, res) => {
         try {
             const id = req.body.pid
-            let {  cid, prefix, fname, lname, birthday, phone, address, latitude, longitude } = req.body;
         // ✅ ตรวจสอบและแปลง birthday ที่เป็น "22/06/2025"
+        let birthday = req.body.birthday
             if (typeof birthday === 'string') {
                 const [day, month, year] = birthday.split('/');
                 if (day && month && year) {
@@ -579,17 +579,25 @@ module.exports = {
                     address = address[0];
                 }
             const updated = await patient.findByIdAndUpdate(
-                id,
+                { _id: id }, 
                 {
-                    cid,
-                    prefix,
-                    fname,
-                    lname,
+                    $set: {
+                    cid:req.body.cid,
+                    prefix: req.body.prefix,
+                    fname: req.body.fname,
+                    lname:req.body.lname,
                     birthday,
-                    phone,
-                    address,     // { bannumber, moo, subdistrict, district, province }
-                    latitude,
-                    longitude
+                    phone: req.body.phone,
+                    address: {
+                        bannumber: req.body.banumber,
+                        moo: req.body.moo,
+                        subdistrict: req.body.subdistrict.name_th,
+                        district: req.body.district.name_th,
+                        province: req.body.province.name_th
+                    },
+                    latitude:req.body.latitude,
+                    longitude:req.body.longitude
+                    }
                 },
                 { new: true, runValidators: true }
             );
