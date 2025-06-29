@@ -576,7 +576,7 @@ module.exports = {
                 }
             }
             const updated = await patient.findByIdAndUpdate(
-                { _id: id }, 
+                 id , 
                 {
                     $set: {
                     cid:req.body.cid,
