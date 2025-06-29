@@ -575,9 +575,6 @@ module.exports = {
                     return res.status(400).json({ error: 'รูปแบบวันเกิดไม่ถูกต้อง (ควรเป็น DD/MM/YYYY)' });
                 }
             }
-                if (Array.isArray(address)) {
-                    address = address[0];
-                }
             const updated = await patient.findByIdAndUpdate(
                 { _id: id }, 
                 {
