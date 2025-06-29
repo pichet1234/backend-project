@@ -565,6 +565,13 @@ module.exports = {
         try {
             const id = req.body.pid
             const {  cid, prefix, fname, lname, birthday, phone, address, latitude, longitude } = req.body;
+                    if (birthday) {
+            const parsedBirthday = dayjs(birthday, 'DD/MM/YYYY', true);
+            if (!parsedBirthday.isValid()) {
+                return res.status(400).json({ error: 'รูปแบบวันเกิดไม่ถูกต้อง ควรเป็น DD/MM/YYYY' });
+            }
+            birthday = parsedBirthday.toDate();
+        }
             const updated = await patient.findByIdAndUpdate(
                 id,
                 {
