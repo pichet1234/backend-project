@@ -565,7 +565,7 @@ module.exports = {
     editPatient: async (req, res) => {
         try {
             const id = req.body.pid
-        // ✅ ตรวจสอบและแปลง birthday ที่เป็น "22/06/2025"
+        //  ตรวจสอบและแปลง birthday 
         let birthday = req.body.birthday
             if (typeof birthday === 'string') {
                 const [day, month, year] = birthday.split('/');
@@ -614,5 +614,17 @@ module.exports = {
             }
         }
     },
-
+    //ลบ  patient 
+    deletepatient: async (req, res)=>{
+        const pid = req.body.pid
+        try{
+            const result = await patient.findByIdAndDelete({_id: pid });
+            if(!result){
+                return res.status(404).json({ message: "ไม่พบผู้ป่วย"});
+            }
+            res.json({ message: "ลบข้อมูลสำเร็จ" , result })
+        }catch (error){
+            res.status(500).json({ message: 'เกิดข้อผิดพลาด', error });
+        }
+    }
 }

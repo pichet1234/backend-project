@@ -39,6 +39,7 @@ router.get('/notas2q', (req, res, next)=>{ patient.getNotAssessed2Q(req, res); }
 router.post('/asstwoqui' ,(req, res, next)=>{ patient.assfortwoq(req, res);})//กรองและออกรายงาน
 router.post('/viewpatient' ,(req, res, next)=>{ patient.viewPatient(req, res);});//ดูประชาชนเป็นรายบุคคล
 router.post('/editpatient', (req, res, next)=>{ patient.editPatient(req, res);})//edit patient
+router.post('/deletepat' , (req, res, next)=>{ patient.deletepatient(req, res);})//delete patient
 
 /**
  * user
