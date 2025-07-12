@@ -99,7 +99,7 @@ module.exports = {
   forgotpassword: async (req, res) => {
     try {
       const { email } = req.body;
-      const existingUser = await User.findOne({ email: req.body.email }).collation({ locale: 'th', strength: 1 });
+      const existingUser = await User.findOne({ email: email }).collation({ locale: 'th', strength: 1 });
       if (!existingUser) return res.status(404).json({ message: 'User not found' });
 
       const token = crypto.randomBytes(32).toString('hex');
@@ -126,7 +126,7 @@ module.exports = {
   },
   resetpassword: async (req, res) => {
     try {
-      const { token } = req.params;
+      const { token } = req.body;
       const { password } = req.body;
       const user = await User.findOne({
         resetToken: token,
