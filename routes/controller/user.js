@@ -108,14 +108,14 @@ module.exports = {
       await existingUser.save();
 
       // ส่งอีเมล (mock หรือจริงก็ได้)
-      const resetLink = `http://localhost:4200/auth/reset-password/${token}`;
+      const resetLink = `https://smart-home-wam-v-care.netlify.app/auth/reset-password/${token}`;
       console.log('Reset link:', resetLink);
       // ที่นี่ควรส่งอีเมลจริง
       return res.status(200).json({
         message: 'Reset link sent to email',
         token,
         data: {
-          link: `http://localhost:4200/auth/reset-password/${token}`
+          link: `https://smart-home-wam-v-care.netlify.app/auth/reset-password/${token}`
         }
       });
       res.json({ message: 'Reset link sent to email' });
