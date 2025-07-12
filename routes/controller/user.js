@@ -103,7 +103,7 @@ module.exports = {
       if (!existingUser) return res.status(404).json({ message: 'User not found' });
 
       const token = crypto.randomBytes(32).toString('hex');
-      existingUser.resetToken = token;  // <-- แก้ตรงนี้
+      existingUser.resetToken = token; 
       existingUser.resetTokenExpire = Date.now() + 3600000; // 1 ชม.
       await existingUser.save();
 
@@ -126,7 +126,7 @@ module.exports = {
   },
   resetpassword: async (req, res) => {
     try {
-      const { token } = req.body;
+      const { token } = req.params;
       const { password } = req.body;
       const user = await User.findOne({
         resetToken: token,
