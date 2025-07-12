@@ -142,7 +142,7 @@ module.exports = {
 
       res.json({ message: 'Password reset successful' });
     } catch {
-      console.error('Login error:', error);
+      console.error('Reset password error:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
