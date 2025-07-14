@@ -3,6 +3,7 @@ var router = express.Router();
 var patient  = require('./controller/patient');
 var assessment2q = require('./controller/assessment_2q');
 var assessment9q = require('./controller/assessment_9q');
+var assessment8q = require('./controller/assessment_8q');
 var user = require('./controller/user');
 var followup = require('./controller/followup');
 
@@ -50,10 +51,11 @@ router.post('/forgot-password', (req, res, next)=>{ user.forgotpassword(req,res)
 router.post('/reset-password/:token', (req, res,next)=>{ user.resetpassword(req, res);});
 router.get('/users', (req, res)=>{ user.getuser(req, res); });
 /*
-*แบบประเมิน 2q 9q 
+*แบบประเมิน 2q 9q 8q
 */  
-router.post('/2q', (req,res, next)=>{ assessment2q.addaess(req, res); })
-router.post('/9q' , (req, res, next)=>{ assessment9q.addaess(req, res); })
+router.post('/2q', (req,res, next)=>{ assessment2q.addaess(req, res); });
+router.post('/9q' , (req, res, next)=>{ assessment9q.addaess(req, res); });
+router.post('/8q' , (req, res, next)=>{ assessment8q.addaess(req, res); });
 
 /**
  * followup
