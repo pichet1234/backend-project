@@ -23,7 +23,7 @@ addaess: async (req, res) => {
                 score: req.body.score,
                 risklevel: req.body.risklevel,
                 assessmentdate: new Date(),
-                note: '0=ไม่มีเลย,1=เล็กน้อย,2=ค่อนข้างมา,3=มากที่สุด'
+                note: ''
             }]);
 
             res.status(201).json({
