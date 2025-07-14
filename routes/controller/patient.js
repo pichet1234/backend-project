@@ -549,7 +549,7 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ error: 'เกิดข้อผิดพลาด' })
         }
-    },
+     },
     viewPatient: async (req, res) => {
         try {
             const viewpat = await patient.findOne({ _id: req.body.pid });
