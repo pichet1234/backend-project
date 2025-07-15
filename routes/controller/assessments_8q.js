@@ -19,7 +19,6 @@ addaess: async (req, res) => {
                 answer6: req.body.answer6,
                 answer7: req.body.answer7,
                 answer8: req.body.answer8,
-                answer9: req.body.answer9,
                 score: req.body.score,
                 risklevel: req.body.risklevel,
                 assessmentdate: new Date(),
