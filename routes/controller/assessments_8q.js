@@ -5,8 +5,7 @@ var assessment8q = mongoose.model('assessment8q', require('../schema/assessments
 module.exports = {
 addaess: async (req, res) => {
         try {
-
-
+            console.log(req.body)
             const result = await assessment8q.insertMany([{
                 pid: req.body.pid,
                 userid: req.body.userid,

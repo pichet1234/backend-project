@@ -3,7 +3,7 @@ var router = express.Router();
 var patient  = require('./controller/patient');
 var assessment2q = require('./controller/assessment_2q');
 var assessment9q = require('./controller/assessment_9q');
-var assessment8q = require('./controller/assessment_8q');
+var assessment8q = require('./controller/assessments_8q');
 var user = require('./controller/user');
 var followup = require('./controller/followup');
 
