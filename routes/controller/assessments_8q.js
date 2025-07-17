@@ -25,7 +25,7 @@ addaess: async (req, res) => {
             }]);
 
             res.status(201).json({
-                message: 'ผลการประเมิน',
+                message: 'บันทึกผลการประเมินสำเร็จ',
                 data: result,
             });
 
