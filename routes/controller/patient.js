@@ -226,7 +226,7 @@ module.exports = {
             res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูล' });
         }
     },
-    //นับจำนวนผู้ที่มี"อาการซึมเศร้าเล็กน้อย" getmoderate
+    //นับจำนวนผู้ที่มี"อาการซึมเศร้าปานกลาง" getmoderate
     getmoderate: async (req, res) => {
         const { startDate, endDate } = req.body;
 
